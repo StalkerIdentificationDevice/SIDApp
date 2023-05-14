@@ -7,13 +7,17 @@ export default function App() {
   const [isArmed, setArmed] = useState(true)
   function switchCallback () {
     if(isArmed) {
-      fetch('http://172.20.10.4:8000/disarm', {}).then(() => {
+      fetch('http://172.20.10.4:8000/disarm', {method: "GET"}).then(() => {
         setArmed(false)
+      }).catch((err) => {
+        console.error(err);
       })
     }
     else {
-      fetch('http://172.20.10.4:8000/arm', {}).then(() => {
+      fetch('http://172.20.10.4:8000/arm', {method: "GET"}).then(() => {
         setArmed(true)
+      }).catch((err) => {
+        console.error(err);
       })
     }
   }
