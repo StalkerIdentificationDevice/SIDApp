@@ -1,23 +1,29 @@
-import { View, StyleSheet, Button, useWindowDimensions, Text } from 'react-native';
+import { View, StyleSheet, Text, Switch } from 'react-native';
 import * as React from 'react';
-import RenderHtml from 'react-native-render-html';
 import { WebView } from 'react-native-webview';
-
-const source = {
-  html: `
-  <body>
-<h1>Stalker Identification Device</h1>
-<img src="http://172.20.10.4:8000/stream.mjpg" width="640" height="480">
-</body>`
-};
+import { useState } from 'react';
 
 export default function App() {
-  const { width } = useWindowDimensions();
+  const [isArmed, setArmed] = useState(true)
+  function switchCallback () {
+    if(isArmed) {
+      fetch('http://172.20.10.4:8000/disarm', {}).then(() => {
+        setArmed(false)
+      })
+    }
+    else {
+      fetch('http://172.20.10.4:8000/arm', {}).then(() => {
+        setArmed(true)
+      })
+    }
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to SID</Text>
       <Text style={styles.body}>Live feed</Text>
-      <WebView source={{uri: 'http://172.20.10.4:8000/stream.mjpg'}}/>
+      {isArmed ? <WebView style={styles.video} source={{uri: 'http://172.20.10.4:8000/stream.mjpg'}}/> : <View style={styles.disarm}><Text style={styles.body}>The camera is turned off</Text></View>}
+      {isArmed ? <Text style={styles.body}>Armed</Text> : <Text style={styles.body}>Disarmed</Text>}
+      <Switch style={styles.switch} onValueChange={switchCallback} value={isArmed}/>
     </View>
   );
 }
@@ -35,6 +41,21 @@ const styles = StyleSheet.create({
     margin: 10
   },
   body: {
+    alignSelf: 'center',
+    textAlign: 'center'
+  },
+  video: {
+    height: 640,
+    width: 700,
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
+  disarm: {
+    height: 620,
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
+  switch: {
     alignSelf: 'center'
   }
 });
