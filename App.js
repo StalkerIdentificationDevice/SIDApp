@@ -1,15 +1,22 @@
 import { View, StyleSheet, Text, Switch, Button, TouchableOpacity } from 'react-native';
 import * as React from 'react';
 import { WebView } from 'react-native-webview';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import * as Linking from "expo-linking";
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
+
+// TaskManager.defineTask("get-shot", async () => {
+//   console.log("running async function")
+//   await fetch('http://raspberrypi.local:8000/shot', {method: "GET", headers: {"username": username}})
+//   return BackgroundFetch.BackgroundFetchResult.NoData;
+// });
 
 export default function App() {
   const [isArmed, setArmed] = useState(true)
   const [contactName, setContactName] = useState("Brody")
   const [contactPhone, setContactPhone] = useState("+18502522527")
+  const [username, setUsername] = useState("example_user")
   function switchCallback () {
     if(isArmed) {
       fetch('http://raspberrypi.local:8000/disarm', {method: "GET"}).then(() => {
@@ -35,14 +42,51 @@ export default function App() {
     })
   }
 
-  TaskManager.defineTask("get_shot", async () => {
-    await fetch('http://raspberrypi.local:8000/shot', {method: "GET"})
-    return BackgroundFetch.BackgroundFetchResult.NewData;
-  })
+  function useInterval(callback, delay) {
+    const savedCallback = useRef();
+  
+    // Remember the latest callback.
+    useEffect(() => {
+      savedCallback.current = callback;
+    }, [callback]);
+  
+    // Set up the interval.
+    useEffect(() => {
+      function tick() {
+        savedCallback.current();
+      }
+      if (delay !== null) {
+        let id = setInterval(tick, delay);
+        return () => clearInterval(id);
+      }
+    }, [delay]);
+  }
 
-  BackgroundFetch.registerTaskAsync("get_shot", {
-    minimumInterval: 30
-  });
+  useInterval(() => {
+    console.log("attempting callback")
+    fetch('http://raspberrypi.local:8000/shot', {method: "GET", headers: {"username": username}}).then(() => {
+      console.log("it worked!");
+    }).catch((err) => {
+      console.error(err);
+    })
+  }, 60000)
+
+  // useEffect(() => {
+  //   async function registerBackgroundFetchAsync() {
+  //     console.log("registering async function");
+  //     await BackgroundFetch.registerTaskAsync("get-shot", {
+  //       minimumInterval: 5
+  //     });
+  //     const status = await BackgroundFetch.getStatusAsync();
+  //     const isRegistered = await TaskManager.isTaskRegisteredAsync("get-shot");
+      
+  //     console.log("completed registering async function with status: " + status)
+  //     console.log("is registered = " + isRegistered);
+  //   }
+  //   registerBackgroundFetchAsync().then(() => {
+  //     console.log("it worked!")
+  //   });
+  // }, []);
 
   return (
     <View style={styles.container}>
