@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-sidapp-dev-232145-authRole",
+      "UnauthRoleArn": "arn:aws:iam::837111542380:role/amplify-sidapp-dev-232145-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::837111542380:role/amplify-sidapp-dev-232145-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-sidapp-dev-232145-deployment",
+      "UnauthRoleName": "amplify-sidapp-dev-232145-unauthRole",
+      "StackName": "amplify-sidapp-dev-232145",
+      "StackId": "arn:aws:cloudformation:us-east-1:837111542380:stack/amplify-sidapp-dev-232145/479d0da0-faab-11ed-b15a-0e0498f38db3",
+      "AmplifyAppId": "d292c8hnyn3rfu"
+    },
+    "categories": {
+      "auth": {
+        "sidappc1935de0": {}
+      }
+    }
+  }
+}

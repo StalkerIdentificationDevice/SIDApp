@@ -3,103 +3,105 @@ import * as React from 'react';
 import { WebView } from 'react-native-webview';
 import { useState, useEffect, useRef } from 'react';
 import * as Linking from "expo-linking";
-import * as BackgroundFetch from 'expo-background-fetch';
-import * as TaskManager from 'expo-task-manager';
+import { Auth } from 'aws-amplify';
+import awsconfig from './src/aws-exports';
+import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react-native';
 
-// TaskManager.defineTask("get-shot", async () => {
-//   console.log("running async function")
-//   await fetch('http://raspberrypi.local:8000/shot', {method: "GET", headers: {"username": username}})
-//   return BackgroundFetch.BackgroundFetchResult.NoData;
-// });
+// >>New - Configuring Auth Module
+Auth.configure(awsconfig);
 
-export default function App() {
-  const [isArmed, setArmed] = useState(true)
-  const [contactName, setContactName] = useState("Brody")
-  const [contactPhone, setContactPhone] = useState("+18502522527")
-  const [username, setUsername] = useState("example_user")
-  function switchCallback () {
-    if(isArmed) {
-      fetch('http://raspberrypi.local:8000/disarm', {method: "GET"}).then(() => {
+export default AuthenticatedApp;
+
+function AuthenticatedApp() {
+  return (
+    <Authenticator.Provider>
+      <Authenticator
+        components={{
+          SignUp: ({ fields, ...props }) => (
+            <Authenticator.SignUp
+              {...props}
+              fields={[
+                ...fields,
+                {
+                  name: 'emergency-contact',
+                  label: 'Emergency Contact Name',
+                  type: 'custom',
+                  placeholder: 'Enter your contact name',
+                },
+                {
+                  name: 'emergency-number',
+                  label: 'Emergency Contact Phone Number',
+                  type: 'custom',
+                  placeholder: 'Enter your contact number',
+                },
+              ]}
+            />
+          ),
+        }}
+      >
+        <App />
+      </Authenticator>
+    </Authenticator.Provider>
+  );
+}
+
+function App() {
+  const [isArmed, setArmed] = useState(false)
+  const { user, signOut } = useAuthenticator();
+
+
+  function switchCallback() {
+    if (isArmed) {
+      fetch('http://raspberrypi.local:8000/disarm', { method: "GET" }).then(() => {
         setArmed(false)
       }).catch((err) => {
         console.error(err);
       })
     }
     else {
-      fetch('http://raspberrypi.local:8000/arm', {method: "GET"}).then(() => {
+      fetch('http://raspberrypi.local:8000/arm', { method: "GET" }).then(() => {
         setArmed(true)
       }).catch((err) => {
         console.error(err);
       })
     }
   }
-  
+
   function onCallPress() {
-    Linking.openURL(`tel:${contactPhone}`).then(() => {
-      console.log(`Successfully called ${contactPhone}`)
+    Linking.openURL(`tel:${user.attributes['custom:emergency-number']}`).then(() => {
+      console.log(`Successfully called ${user.attributes['custom:emergency-number']}`)
     }).catch((err) => {
       console.error(err)
     })
   }
 
-  function useInterval(callback, delay) {
-    const savedCallback = useRef();
-  
-    // Remember the latest callback.
-    useEffect(() => {
-      savedCallback.current = callback;
-    }, [callback]);
-  
-    // Set up the interval.
-    useEffect(() => {
-      function tick() {
-        savedCallback.current();
-      }
-      if (delay !== null) {
-        let id = setInterval(tick, delay);
-        return () => clearInterval(id);
-      }
-    }, [delay]);
-  }
-
-  useInterval(() => {
-    console.log("attempting callback")
-    fetch('http://raspberrypi.local:8000/shot', {method: "GET", headers: {"username": username}}).then(() => {
-      console.log("it worked!");
+  function onEmergencyCallPress() {
+    Linking.openURL(`tel:911`).then(() => {
+      console.log(`Successfully called 911`)
     }).catch((err) => {
-      console.error(err);
+      console.error(err)
     })
-  }, 60000)
-
-  // useEffect(() => {
-  //   async function registerBackgroundFetchAsync() {
-  //     console.log("registering async function");
-  //     await BackgroundFetch.registerTaskAsync("get-shot", {
-  //       minimumInterval: 5
-  //     });
-  //     const status = await BackgroundFetch.getStatusAsync();
-  //     const isRegistered = await TaskManager.isTaskRegisteredAsync("get-shot");
-      
-  //     console.log("completed registering async function with status: " + status)
-  //     console.log("is registered = " + isRegistered);
-  //   }
-  //   registerBackgroundFetchAsync().then(() => {
-  //     console.log("it worked!")
-  //   });
-  // }, []);
+  }
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.regular_button} onPress={signOut}>
+        <Text style={styles.body}>Sign Out</Text>
+      </TouchableOpacity>
       <Text style={styles.title}>Welcome to SID</Text>
       <Text style={styles.body}>Live feed</Text>
-      {isArmed ? <WebView style={styles.video} source={{uri: 'http://raspberrypi.local:8000/stream.mjpg'}}/> : <View style={styles.disarm}><Text style={styles.body}>The camera is turned off</Text></View>}
+      {isArmed ? <WebView style={styles.video} source={{ uri: 'http://raspberrypi.local:8000/stream.mjpg' }} /> : <View style={styles.disarm}><Text style={styles.body}>The camera is turned off</Text></View>}
       {isArmed ? <Text style={styles.body}>Armed</Text> : <Text style={styles.body}>Disarmed</Text>}
-      <Switch style={styles.switch} onValueChange={switchCallback} value={isArmed}/>
+      <Switch style={styles.switch} onValueChange={switchCallback} value={isArmed} />
+      <View style={{flexDirection: 'row', alignSelf: "center", alignContent: "space-around"}}>
       <TouchableOpacity style={styles.call_button} onPress={onCallPress}>
-        <Text style={styles.call_text}>
-        Call {contactName}
-        </Text>
+        <Text style={styles.call_text}>Call {user.attributes['custom:emergency-contact']}</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.emergency_call_button} onPress={onEmergencyCallPress}>
+        <Text style={styles.call_text}>Call 911</Text>
+      </TouchableOpacity>
+      </View>
+      
     </View>
   );
 }
@@ -108,7 +110,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    margin: 50,
+    marginTop: 50,
   },
   title: {
     fontSize: 30,
@@ -134,17 +136,34 @@ const styles = StyleSheet.create({
   switch: {
     alignSelf: 'center'
   },
+  emergency_call_button: {
+    borderRadius: 10,
+    backgroundColor: '#ce2029',
+    alignSelf: 'center',
+    borderWidth: 5,
+    borderColor: '#ce2029',
+    margin: 20
+  },
   call_button: {
     borderRadius: 10,
-    backgroundColor: 'red',
+    backgroundColor: '#FF5F15',
     alignSelf: 'center',
-    borderWidth:5,
-    borderColor: 'red',
+    borderWidth: 5,
+    borderColor: '#FF5F15',
     margin: 20
   },
   call_text: {
     alignSelf: 'center',
     textAlign: 'center',
     fontSize: 25
-  }
+  },
+  regular_button: {
+    borderRadius: 10,
+    backgroundColor: '#ADD8E6',
+    alignSelf: 'center',
+    borderWidth: 5,
+    borderColor: '#ADD8E6',
+    position: 'absolute',
+    right: 10
+  },
 });
