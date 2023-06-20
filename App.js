@@ -59,8 +59,10 @@ function App() {
       })
     }
     else {
-      fetch('http://raspberrypi.local:8000/arm', { method: "GET" }).then(() => {
-        setArmed(true)
+      fetch('http://raspberrypi.local:8000/arm', { method: "GET", headers: {'username': user.username} }).then((res) => {
+        if(res.status == 200) {
+          setArmed(true)
+        }
       }).catch((err) => {
         console.error(err);
       })
