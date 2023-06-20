@@ -17,7 +17,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.gse.sid"
+      "bundleIdentifier": "com.gse.sid",
+      "buildNumber": "1.0.1"
     },
     "android": {
       "adaptiveIcon": {
