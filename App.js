@@ -3,12 +3,12 @@ import * as React from 'react';
 import { WebView } from 'react-native-webview';
 import { useState, useEffect, useRef } from 'react';
 import * as Linking from "expo-linking";
-import { Auth } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
 import awsconfig from './src/aws-exports';
 import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react-native';
 
 // >>New - Configuring Auth Module
-Auth.configure(awsconfig);
+Amplify.configure(awsconfig);
 
 export default AuthenticatedApp;
 
@@ -23,13 +23,13 @@ function AuthenticatedApp() {
               fields={[
                 ...fields,
                 {
-                  name: 'emergency-contact',
+                  name: 'custom:emergency-contact',
                   label: 'Emergency Contact Name',
                   type: 'custom',
                   placeholder: 'Enter your contact name',
                 },
                 {
-                  name: 'emergency-number',
+                  name: 'custom:emergency-number',
                   label: 'Emergency Contact Phone Number',
                   type: 'custom',
                   placeholder: 'Enter your contact number',

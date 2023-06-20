@@ -1,6 +1,6 @@
 {
   "auth": {
-    "sidappc1935de0": {
+    "SIDApp": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
@@ -9,7 +9,12 @@
           "SMS"
         ],
         "passwordProtectionSettings": {
-          "passwordPolicyCharacters": [],
+          "passwordPolicyCharacters": [
+            "REQUIRES_LOWERCASE",
+            "REQUIRES_NUMBERS",
+            "REQUIRES_SYMBOLS",
+            "REQUIRES_UPPERCASE"
+          ],
           "passwordPolicyMinLength": 8
         },
         "signupAttributes": [
@@ -17,8 +22,7 @@
         ],
         "socialProviders": [],
         "usernameAttributes": [
-          "EMAIL",
-          "PHONE_NUMBER"
+          "EMAIL"
         ],
         "verificationMechanisms": [
           "EMAIL"

@@ -1,7 +1,8 @@
 {
   "expo": {
-    "name": "SIDApp",
-    "slug": "SIDApp",
+    "name": "S.I.D",
+    "slug": "SID",
+    "owner": "brodygolden",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +16,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gse.sid"
     },
     "android": {
       "adaptiveIcon": {
@@ -26,7 +28,22 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "sdkVersion": "48.0.0"
+    "sdkVersion": "48.0.0",
+    "extra": {
+      "eas": {
+        "projectId": "5261ad71-527c-4896-ab25-b181f567934d"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/5261ad71-527c-4896-ab25-b181f567934d"
+    }
   },
-  "name": "sidapp"
+  "name": "sidapp",
+  "ios": {
+    "supportsTablet": true,
+    "bundleIdentifier": "com.gse.sid"
+  }
 }
