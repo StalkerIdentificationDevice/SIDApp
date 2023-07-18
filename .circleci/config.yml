@@ -1,0 +1,141 @@
+version: 2.1
+defaults: &defaults
+  working_directory: ~/app
+  docker:
+    # the Docker image with Cypress dependencies
+    - image: cypress/base:12.14.0
+      environment:
+        ## this enables colors in the output
+        TERM: xterm
+
+commands:
+  restore-cache-and-install-dependencies:
+    description: "Restore cache and install dependencies"
+    steps:
+      - restore_cache:
+          key: v2-deps
+      - run:
+          name: Install Dependencies
+          command: npm ci
+      - save_cache:
+          key: v2-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+            - ~/.npm
+            - ~/.cache
+  publish_to_expo:
+    description: "Publish JS bundle to Expo"
+    steps:
+      - checkout
+      - restore-cache-and-install-dependencies
+      - run:
+          name: Publish to Expo
+          command: npx expo-cli publish --non-interactive --max-workers 1 --release-channel $EXPO_RELEASE_CHANNEL
+
+  build_binaries:
+    description: "Build native binaries"
+    steps:
+      - checkout
+      - restore-cache-and-install-dependencies
+      - run:
+          name: Build Android
+          command: npx expo build:android -t apk --non-interactive --release-channel $EXPO_RELEASE_CHANNEL --no-wait
+      - run:
+          name: Build iOS
+          command: npx expo build:ios -t archive --non-interactive --release-channel $EXPO_RELEASE_CHANNEL --no-wait
+
+jobs:
+  unit_test:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore-cache-and-install-dependencies
+      - run:
+          name: Run ESLint
+          command: npm run lint
+      - run:
+          name: Run unit tests
+          command: npm run test
+
+  publish_feature_to_expo:
+    <<: *defaults
+    environment:
+      EXPO_RELEASE_CHANNEL: << pipeline.git.branch >>
+    resource_class: xlarge
+    steps:
+      - publish_to_expo
+
+  publish_to_expo_staging:
+    <<: *defaults
+    environment:
+      EXPO_RELEASE_CHANNEL: staging
+    resource_class: xlarge
+    steps:
+      - publish_to_expo
+
+  build_binaries_staging:
+    <<: *defaults
+    environment:
+      EXPO_RELEASE_CHANNEL: staging
+    steps:
+      - build_binaries
+
+  publish_to_expo_production:
+    <<: *defaults
+    environment:
+      EXPO_RELEASE_CHANNEL: production
+    resource_class: xlarge
+    steps:
+      - publish_to_expo
+
+  build_binaries_production:
+    <<: *defaults
+    environment:
+      EXPO_RELEASE_CHANNEL: production
+    steps:
+      - build_binaries
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - unit_test
+      - approval:
+          type: approval
+          requires:
+            - unit_test
+      - publish_feature_to_expo:
+          context: app-name-staging
+          requires:
+            - approval
+          filters:
+            branches:
+              ignore: master
+      - publish_to_expo_staging:
+          context: app-name-staging
+          requires:
+            - unit_test
+          filters:
+            branches:
+              only: master
+      - build_binaries_staging:
+          context: app-name-staging
+          requires:
+            - approval
+          filters:
+            branches:
+              only: master
+      - publish_to_expo_production:
+          context: app-name-production
+          requires:
+            - unit_test
+          filters:
+            tags:
+              only: /^v.*/
+      - build_binaries_production:
+          context: app-name-production
+          requires:
+            - approval
+          filters:
+            tags:
+              only: /^v.*/
