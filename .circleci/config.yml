@@ -23,6 +23,9 @@ jobs:
       - run:
           name: Trigger build
           command: npx eas-cli build --platform ios --non-interactive
+      - run:
+          name: Trigger submit
+          command: npx eas-cli submit -p ios --latest
 
 workflows:
   build_app:
