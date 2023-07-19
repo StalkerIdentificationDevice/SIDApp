@@ -27,4 +27,4 @@ workflows:
       - eas_build:
           filters:
             branches:
-              only: master
+              only: main
