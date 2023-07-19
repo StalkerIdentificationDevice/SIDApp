@@ -12,6 +12,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Create package-lock.json
+          command: npm install
+      - run:
           name: Install dependencies
           command: npm ci
       - run:
