@@ -24,21 +24,14 @@ jobs:
           name: Trigger build
           command: npx eas-cli build --platform ios --non-interactive
           no_output_timeout: 30m
-  eas_submit:
-    executor: default
-    steps:
       - run:
           name: Trigger submit
           command: npx eas-cli submit -p ios --latest
-
+      
 workflows:
   build_app:
     jobs:
       - eas_build:
-          filters:
-            branches:
-              only: main
-      - eas_submit:
           filters:
             branches:
               only: main
