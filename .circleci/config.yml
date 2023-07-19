@@ -18,6 +18,9 @@ jobs:
           name: Install dependencies
           command: npm ci
       - run:
+          name: Install AWS_EXPORTS
+          command: npm aws-export
+      - run:
           name: Trigger build
           command: npx eas-cli build --platform ios --non-interactive
 
