@@ -26,7 +26,7 @@ jobs:
           no_output_timeout: 30m
       - run:
           name: Trigger submit
-          command: npx eas-cli submit -p ios --latest
+          command: npx eas-cli submit -p ios --latest --non-interactive
       
 workflows:
   build_app:
