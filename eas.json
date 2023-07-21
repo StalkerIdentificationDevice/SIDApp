@@ -13,6 +13,11 @@
     "production": {}
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "ascAppId": "6450392486",
+        "appleTeamId": "4JBMWD3H45"
+      }
+    }
   }
 }
