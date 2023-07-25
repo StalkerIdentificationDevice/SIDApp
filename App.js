@@ -56,11 +56,11 @@ function AuthenticatedApp() {
 }
 
 function App() {
-  const [isArmed, setArmed] = useState(false)
+  const [isArmed, setArmed] = useState(false);
   const { user, signOut } = useAuthenticator();
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState(false);
-  const [isLoading, setLoading] = useState(false)
+  const [isLoading, setLoading] = useState(false);
   const notificationListener = useRef();
   const responseListener = useRef();
 
@@ -161,7 +161,6 @@ async function registerForPushNotificationsAsync() {
     }
     token = (await Notifications.getExpoPushTokenAsync()).data;
     console.log(token);
-    fetch('')
   } else {
     alert('Must use physical device for Push Notifications');
   }
