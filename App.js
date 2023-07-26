@@ -59,10 +59,10 @@ function App() {
   const [isArmed, setArmed] = useState(false);
   const { user, signOut } = useAuthenticator();
   const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState(false);
+  // const [notification, setNotification] = useState(false);
   const [isLoading, setLoading] = useState(false);
-  const notificationListener = useRef();
-  const responseListener = useRef();
+  // const notificationListener = useRef();
+  // const responseListener = useRef();
 
   // useEffect(() => {
   //   registerForPushNotificationsAsync().then(token => {
