@@ -121,26 +121,26 @@ function App() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.regular_button} onPress={signOut}>
+      {/* <TouchableOpacity style={styles.regular_button} onPress={signOut}>
         <Text style={styles.body}>Sign Out</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <Text style={styles.title}>Welcome to SID</Text>
-      <Text style={styles.body}>Live feed</Text>
+      {/* <Text style={styles.body}>Live feed</Text>
       {isArmed ? <WebView style={styles.video} source={{ uri: 'http://raspberrypi.local:8000/stream.mjpg' }} /> : <View style={styles.disarm}><Text style={styles.body}>The camera is turned off</Text></View>}
-      {/* {isLoading ? <ActivityIndicator size={"large"}/> : 
-      <View> */}
+      {isLoading ? <ActivityIndicator size={"large"}/> : 
+      <View>
       {isArmed ? <Text style={styles.body}>Armed</Text> : <Text style={styles.body}>Disarmed</Text>}
       <Switch style={styles.switch} onValueChange={switchCallback} value={isArmed} />
-      {/* </View>
-      } */}
-      <View style={{flexDirection: 'row', alignSelf: "center", alignContent: "space-around"}}>
-      <TouchableOpacity style={styles.call_button} onPress={onCallPress}>
-        <Text style={styles.call_text}>Call {user.attributes['custom:emergency-contact']}</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.emergency_call_button} onPress={onEmergencyCallPress}>
-        <Text style={styles.call_text}>Call 911</Text>
-      </TouchableOpacity>
       </View>
+      }
+      <View style={{flexDirection: 'row', alignSelf: "center", alignContent: "space-around"}}>
+        <TouchableOpacity style={styles.call_button} onPress={onCallPress}>
+          <Text style={styles.call_text}>Call {user.attributes['custom:emergency-contact']}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.emergency_call_button} onPress={onEmergencyCallPress}>
+          <Text style={styles.call_text}>Call 911</Text>
+        </TouchableOpacity>
+      </View> */}
       
     </View>
   );
