@@ -57,7 +57,7 @@ function AuthenticatedApp() {
 
 function App() {
   const [isArmed, setArmed] = useState(false);
-  const { user, signOut } = useAuthenticator();
+  const { user, signOut } = useAuthenticator((context) => [context.user]);
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState(false);
   const [isLoading, setLoading] = useState(false)
@@ -133,9 +133,9 @@ function App() {
       <Switch style={styles.switch} onValueChange={switchCallback} value={isArmed} />
       </View>}
       <View style={{flexDirection: 'row', alignSelf: "center", alignContent: "space-around"}}>
-        {/* <TouchableOpacity style={styles.call_button} onPress={onCallPress}>
+        <TouchableOpacity style={styles.call_button} onPress={onCallPress}>
           <Text style={styles.call_text}>Call {user.attributes['custom:emergency-contact']}</Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
         <TouchableOpacity style={styles.emergency_call_button} onPress={onEmergencyCallPress}>
           <Text style={styles.call_text}>Call 911</Text>
         </TouchableOpacity>
