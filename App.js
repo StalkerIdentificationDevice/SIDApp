@@ -63,6 +63,7 @@ function App() {
   const [isLoading, setLoading] = useState(false)
   const notificationListener = useRef();
   const responseListener = useRef();
+  const emergencyContactName = 'custom:emergency-contact' in user.attributes ? user.attributes['custom:emergency-contact'] : 'Emergency Contact'
 
   useEffect(() => {
     registerForPushNotificationsAsync().then(token => {
@@ -134,7 +135,7 @@ function App() {
       </View>}
       <View style={{flexDirection: 'row', alignSelf: "center", alignContent: "space-around"}}>
         <TouchableOpacity style={styles.call_button} onPress={onCallPress}>
-          <Text style={styles.call_text}>Call Cori</Text>
+          <Text style={styles.call_text}>Call {emergencyContactName}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.emergency_call_button} onPress={onEmergencyCallPress}>
           <Text style={styles.call_text}>Call 911</Text>
