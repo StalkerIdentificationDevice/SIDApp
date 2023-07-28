@@ -85,7 +85,7 @@ function App() {
 
 
   const switchCallback = () => {
-    // setLoading(true)
+    setLoading(true)
     if (isArmed) {
       fetch('http://raspberrypi.local:8000/disarm', { method: "GET" }).then(() => {
         setArmed(false);
@@ -94,13 +94,13 @@ function App() {
       })
     }
     else {
-      fetch('http://raspberrypi.local:8000/arm', { method: "GET", headers: {'username': user.username} }).then(() => {
+      fetch('http://raspberrypi.local:8000/arm', { method: "GET", headers: {'username': user.username, 'device_token': expoPushToken} }).then(() => {
         setArmed(true);
       }).catch((err) => {
         console.error(err);
       })
     }
-    // setLoading(false)
+    setLoading(false)
   }
 
   const onCallPress = () => {
@@ -132,14 +132,14 @@ function App() {
       {isArmed ? <Text style={styles.body}>Armed</Text> : <Text style={styles.body}>Disarmed</Text>}
       <Switch style={styles.switch} onValueChange={switchCallback} value={isArmed} />
       </View>}
-      {/* <View style={{flexDirection: 'row', alignSelf: "center", alignContent: "space-around"}}>
-        <TouchableOpacity style={styles.call_button} onPress={onCallPress}>
+      <View style={{flexDirection: 'row', alignSelf: "center", alignContent: "space-around"}}>
+        {/* <TouchableOpacity style={styles.call_button} onPress={onCallPress}>
           <Text style={styles.call_text}>Call {user.attributes['custom:emergency-contact']}</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity style={styles.emergency_call_button} onPress={onEmergencyCallPress}>
           <Text style={styles.call_text}>Call 911</Text>
         </TouchableOpacity>
-      </View> */}
+      </View>
       
     </View>
   );
