@@ -134,7 +134,7 @@ function App() {
       </View>}
       <View style={{flexDirection: 'row', alignSelf: "center", alignContent: "space-around"}}>
         <TouchableOpacity style={styles.call_button} onPress={onCallPress}>
-          <Text style={styles.call_text}>Call {user.attributes['custom:emergency-contact']}</Text>
+          <Text style={styles.call_text}>Call Cori</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.emergency_call_button} onPress={onEmergencyCallPress}>
           <Text style={styles.call_text}>Call 911</Text>
