@@ -63,7 +63,7 @@ function App() {
   const [isLoading, setLoading] = useState(false)
   const notificationListener = useRef();
   const responseListener = useRef();
-  const emergencyContactName = 'custom:emergency-contact' in user.attributes ? user.attributes['custom:emergency-contact'] : 'Emergency Contact'
+  var emergencyContactName = user != undefined && user.attributes != undefined && 'custom:emergency-contact' in user.attributes ? user.attributes['custom:emergency-contact'] : 'Emergency Contact'
 
   useEffect(() => {
     registerForPushNotificationsAsync().then(token => {
