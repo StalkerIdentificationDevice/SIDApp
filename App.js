@@ -1,21 +1,21 @@
 import { View, StyleSheet, Text, Switch, ActivityIndicator, TouchableOpacity } from 'react-native';
-import * as React from 'react';
+import React from 'react';
 import { WebView } from 'react-native-webview';
 import { useState, useEffect, useRef } from 'react';
 import * as Linking from "expo-linking";
 import { Amplify } from 'aws-amplify';
 import awsconfig from './src/aws-exports';
 import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react-native';
-import * as Notifications from 'expo-notifications';
-import * as Device from 'expo-device';
+// import * as Notifications from 'expo-notifications';
+// import * as Device from 'expo-device';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
+// Notifications.setNotificationHandler({
+//   handleNotification: async () => ({
+//     shouldShowAlert: true,
+//     shouldPlaySound: false,
+//     shouldSetBadge: false,
+//   }),
+// });
 
 // >>New - Configuring Auth Module
 Amplify.configure(awsconfig);
@@ -58,9 +58,9 @@ function AuthenticatedApp() {
 function App() {
   const [isArmed, setArmed] = useState(false);
   const { user, signOut } = useAuthenticator();
-  const [expoPushToken, setExpoPushToken] = useState('');
+  // const [expoPushToken, setExpoPushToken] = useState('');
   // const [notification, setNotification] = useState(false);
-  const [isLoading, setLoading] = useState(false);
+  // const [isLoading, setLoading] = useState(false)
   // const notificationListener = useRef();
   // const responseListener = useRef();
 
@@ -85,37 +85,37 @@ function App() {
 
 
   function switchCallback() {
-    setLoading(true)
+    // setLoading(true)
     if (isArmed) {
       fetch('http://raspberrypi.local:8000/disarm', { method: "GET" }).then(() => {
-        setArmed(false)
+        setArmed(false);
       }).catch((err) => {
         console.error(err);
       })
     }
     else {
-      fetch('http://raspberrypi.local:8000/arm', { method: "GET", headers: {'username': user.username, 'device_token': expoPushToken} }).then(() => {
-        setArmed(true)
+      fetch('http://raspberrypi.local:8000/arm', { method: "GET", headers: {'username': user.username} }).then(() => {
+        setArmed(true);
       }).catch((err) => {
         console.error(err);
       })
     }
-    setLoading(false)
+    // setLoading(false)
   }
 
   function onCallPress() {
     Linking.openURL(`tel:${user.attributes['custom:emergency-number']}`).then(() => {
-      console.log(`Successfully called ${user.attributes['custom:emergency-number']}`)
+      console.log(`Successfully called ${user.attributes['custom:emergency-number']}`);
     }).catch((err) => {
-      console.error(err)
+      console.error(err);
     })
   }
 
   function onEmergencyCallPress() {
     Linking.openURL(`tel:911`).then(() => {
-      console.log(`Successfully called 911`)
+      console.log(`Successfully called 911`);
     }).catch((err) => {
-      console.error(err)
+      console.error(err);
     })
   }
 
@@ -127,12 +127,12 @@ function App() {
       <Text style={styles.title}>Welcome to SID</Text>
       <Text style={styles.body}>Live feed</Text>
       {isArmed ? <WebView style={styles.video} source={{ uri: 'http://raspberrypi.local:8000/stream.mjpg' }} /> : <View style={styles.disarm}><Text style={styles.body}>The camera is turned off</Text></View>}
-      {isLoading ? <ActivityIndicator/> : 
-      <View>
-        {isArmed ? <Text style={styles.body}>Armed</Text> : <Text style={styles.body}>Disarmed</Text>}
-        <Switch style={styles.switch} onValueChange={switchCallback} value={isArmed} />
-      </View>
-      }
+      {/* {isLoading ? <ActivityIndicator size={"large"}/> : 
+      <View> */}
+      {isArmed ? <Text style={styles.body}>Armed</Text> : <Text style={styles.body}>Disarmed</Text>}
+      <Switch style={styles.switch} onValueChange={switchCallback} value={isArmed} />
+      {/* </View>
+      } */}
       <View style={{flexDirection: 'row', alignSelf: "center", alignContent: "space-around"}}>
       <TouchableOpacity style={styles.call_button} onPress={onCallPress}>
         <Text style={styles.call_text}>Call {user.attributes['custom:emergency-contact']}</Text>
@@ -146,36 +146,36 @@ function App() {
   );
 }
 
-async function registerForPushNotificationsAsync() {
-  let token;
-  if (Device.isDevice) {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-    if (finalStatus !== 'granted') {
-      alert('Failed to get push token for push notification!');
-      return;
-    }
-    token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
-  } else {
-    alert('Must use physical device for Push Notifications');
-  }
+// async function registerForPushNotificationsAsync() {
+//   let token;
+//   if (Device.isDevice) {
+//     const { status: existingStatus } = await Notifications.getPermissionsAsync();
+//     let finalStatus = existingStatus;
+//     if (existingStatus !== 'granted') {
+//       const { status } = await Notifications.requestPermissionsAsync();
+//       finalStatus = status;
+//     }
+//     if (finalStatus !== 'granted') {
+//       alert('Failed to get push token for push notification!');
+//       return;
+//     }
+//     token = (await Notifications.getExpoPushTokenAsync()).data;
+//     console.log(token);
+//   } else {
+//     alert('Must use physical device for Push Notifications');
+//   }
 
-  if (Platform.OS === 'android') {
-    Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
-    });
-  }
+//   if (Platform.OS === 'android') {
+//     Notifications.setNotificationChannelAsync('default', {
+//       name: 'default',
+//       importance: Notifications.AndroidImportance.MAX,
+//       vibrationPattern: [0, 250, 250, 250],
+//       lightColor: '#FF231F7C',
+//     });
+//   }
 
-  return token;
-}
+//   return token;
+// }
 
 const styles = StyleSheet.create({
   container: {
