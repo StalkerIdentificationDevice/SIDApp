@@ -84,7 +84,7 @@ function App() {
   // }, []);
 
 
-  function switchCallback() {
+  const switchCallback = () => {
     // setLoading(true)
     if (isArmed) {
       fetch('http://raspberrypi.local:8000/disarm', { method: "GET" }).then(() => {
@@ -103,7 +103,7 @@ function App() {
     // setLoading(false)
   }
 
-  function onCallPress() {
+  const onCallPress = () => {
     Linking.openURL(`tel:${user.attributes['custom:emergency-number']}`).then(() => {
       console.log(`Successfully called ${user.attributes['custom:emergency-number']}`);
     }).catch((err) => {
@@ -111,7 +111,7 @@ function App() {
     })
   }
 
-  function onEmergencyCallPress() {
+  const onEmergencyCallPress = () => {
     Linking.openURL(`tel:911`).then(() => {
       console.log(`Successfully called 911`);
     }).catch((err) => {
@@ -131,8 +131,7 @@ function App() {
       <View>
       {isArmed ? <Text style={styles.body}>Armed</Text> : <Text style={styles.body}>Disarmed</Text>}
       <Switch style={styles.switch} onValueChange={switchCallback} value={isArmed} />
-      </View>
-      }
+      </View>} */}
       <View style={{flexDirection: 'row', alignSelf: "center", alignContent: "space-around"}}>
         <TouchableOpacity style={styles.call_button} onPress={onCallPress}>
           <Text style={styles.call_text}>Call {user.attributes['custom:emergency-contact']}</Text>
@@ -140,7 +139,7 @@ function App() {
         <TouchableOpacity style={styles.emergency_call_button} onPress={onEmergencyCallPress}>
           <Text style={styles.call_text}>Call 911</Text>
         </TouchableOpacity>
-      </View> */}
+      </View>
       
     </View>
   );
