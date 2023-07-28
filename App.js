@@ -121,9 +121,9 @@ function App() {
 
   return (
     <View style={styles.container}>
-      {/* <TouchableOpacity style={styles.regular_button} onPress={signOut}>
+      <TouchableOpacity style={styles.regular_button} onPress={signOut}>
         <Text style={styles.body}>Sign Out</Text>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
       <Text style={styles.title}>Welcome to SID</Text>
       {/* <Text style={styles.body}>Live feed</Text>
       {isArmed ? <WebView style={styles.video} source={{ uri: 'http://raspberrypi.local:8000/stream.mjpg' }} /> : <View style={styles.disarm}><Text style={styles.body}>The camera is turned off</Text></View>}
