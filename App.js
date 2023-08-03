@@ -8,12 +8,13 @@ import awsconfig from './src/aws-exports';
 import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react-native';
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
   }),
 });
 
@@ -92,16 +93,19 @@ function App() {
         setArmed(false);
       }).catch((err) => {
         console.error(err);
+      }).finally(() => {
+        setLoading(false)
       })
     }
     else {
-      fetch('http://raspberrypi.local:8000/arm', { method: "GET", headers: {'username': user.username, 'device_token': expoPushToken} }).then(() => {
+      fetch('http://raspberrypi.local:8000/arm', { method: "GET", headers: { 'username': user.username, 'device_token': expoPushToken } }).then(() => {
         setArmed(true);
       }).catch((err) => {
         console.error(err);
+      }).finally(() => {
+        setLoading(false)
       })
     }
-    setLoading(false)
   }
 
   const onCallPress = () => {
@@ -122,18 +126,31 @@ function App() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.regular_button} onPress={signOut}>
-        <Text style={styles.body}>Sign Out</Text>
-      </TouchableOpacity>
-      <Text style={styles.title}>Welcome to SID</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={{flex: 1 }}>
+        </View>
+        <View style={{flex: 3, justifyContent: 'space-around'}}>
+          <Text style={styles.title}>S.I.D</Text>
+        </View>
+        <View style={{flex: 1 }}>
+          <TouchableOpacity style={styles.regular_button} onPress={signOut}>
+            <Text style={{textAlign: 'center'}}>Sign Out</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
       <Text style={styles.body}>Live feed</Text>
-      {isArmed ? <WebView style={styles.video} source={{ uri: 'http://raspberrypi.local:8000/stream.mjpg' }} /> : <View style={styles.disarm}><Text style={styles.body}>The camera is turned off</Text></View>}
-      {isLoading ? <ActivityIndicator size={"large"}/> : 
-      <View>
-      {isArmed ? <Text style={styles.body}>Armed</Text> : <Text style={styles.body}>Disarmed</Text>}
-      <Switch style={styles.switch} onValueChange={switchCallback} value={isArmed} />
-      </View>}
-      <View style={{flexDirection: 'row', alignSelf: "center", alignContent: "space-around"}}>
+      <View style={styles.video}>
+        {isArmed ? 
+          <WebView source={{ uri: 'http://raspberrypi.local:8000/stream.mjpg' }} /> : 
+          <View style={{alignSelf: 'center', flex: 1, justifyContent: 'space-around'}}><Text style={styles.body}>The camera is turned off</Text></View>}
+      </View>
+      {isLoading ? <ActivityIndicator size={"large"} /> :
+        <View>
+          {isArmed ? <Text style={styles.body}>Armed</Text> : <Text style={styles.body}>Disarmed</Text>}
+          <Switch style={styles.switch} trackColor={{ true: 'green', false: 'red' }} thumbColor={isArmed ? 'red' : '#005249'} ios_backgroundColor='grey'
+           onValueChange={switchCallback} value={isArmed} />
+        </View>}
+      <View style={{ flexDirection: 'row', flex: 0.75}}>
         <TouchableOpacity style={styles.call_button} onPress={onCallPress}>
           <Text style={styles.call_text}>Call {emergencyContactName}</Text>
         </TouchableOpacity>
@@ -141,7 +158,7 @@ function App() {
           <Text style={styles.call_text}>Call 911</Text>
         </TouchableOpacity>
       </View>
-      
+
     </View>
   );
 }
@@ -180,47 +197,48 @@ async function registerForPushNotificationsAsync() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 50,
+    padding: 50,
+    backgroundColor: 'black'
   },
   title: {
     fontSize: 30,
     alignSelf: 'center',
     fontWeight: 'bold',
-    margin: 10
+    textAlign: 'center',
+    color: 'white'
   },
   body: {
     alignSelf: 'center',
-    textAlign: 'center'
+    textAlign: 'center',
+    color: 'white'
   },
   video: {
-    height: 640,
-    width: 700,
-    alignSelf: 'center',
-    justifyContent: 'center',
-  },
-  disarm: {
-    height: 545,
-    alignSelf: 'center',
-    justifyContent: 'center',
+    flex: 4
   },
   switch: {
-    alignSelf: 'center'
+    alignSelf: 'center',
+    transform: [{ scaleX: 1.5 }, { scaleY: 1.5 }],
+    margin: 10
   },
   emergency_call_button: {
-    borderRadius: 10,
+    borderRadius: '100%',
     backgroundColor: '#ce2029',
     alignSelf: 'center',
-    borderWidth: 5,
     borderColor: '#ce2029',
-    margin: 20
+    flex: 1,
+    height: '100%',
+    justifyContent: 'space-around',
+    margine: '5%'
   },
   call_button: {
-    borderRadius: 10,
+    borderRadius: '100%',
     backgroundColor: '#FF5F15',
     alignSelf: 'center',
-    borderWidth: 5,
     borderColor: '#FF5F15',
-    margin: 20
+    flex: 1,
+    height: '100%',
+    justifyContent: 'space-around',
+    margin: '5%'
   },
   call_text: {
     alignSelf: 'center',
@@ -228,12 +246,11 @@ const styles = StyleSheet.create({
     fontSize: 25
   },
   regular_button: {
-    borderRadius: 10,
+    borderRadius: '100%',
     backgroundColor: '#ADD8E6',
     alignSelf: 'center',
-    borderWidth: 5,
     borderColor: '#ADD8E6',
-    position: 'absolute',
-    right: 10
+    justifyContent: 'space-around',
+    borderWidth: '10%'
   },
 });
