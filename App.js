@@ -92,6 +92,7 @@ function App() {
       fetch('http://raspberrypi.local:8000/disarm', { method: "GET" }).then(() => {
         setArmed(false);
       }).catch((err) => {
+        alert('Failed to disarm. Please retry or restart device')
         console.error(err);
       }).finally(() => {
         setLoading(false)
@@ -101,6 +102,7 @@ function App() {
       fetch('http://raspberrypi.local:8000/arm', { method: "GET", headers: { 'username': user.username, 'device_token': expoPushToken } }).then(() => {
         setArmed(true);
       }).catch((err) => {
+        alert('Failed to arm. Please retry or restart device')
         console.error(err);
       }).finally(() => {
         setLoading(false)
@@ -127,30 +129,32 @@ function App() {
   return (
     <View style={styles.container}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <View style={{flex: 1 }}>
+        <View style={{ flex: 1 }}>
         </View>
-        <View style={{flex: 3, justifyContent: 'space-around'}}>
+        <View style={{ flex: 3, justifyContent: 'space-around' }}>
           <Text style={styles.title}>S.I.D</Text>
         </View>
-        <View style={{flex: 1 }}>
+        <View style={{ flex: 1 }}>
           <TouchableOpacity style={styles.regular_button} onPress={signOut}>
-            <Text style={{textAlign: 'center'}}>Sign Out</Text>
+            <Text style={{ textAlign: 'center' }}>Sign Out</Text>
           </TouchableOpacity>
         </View>
       </View>
       <Text style={styles.body}>Live feed</Text>
       <View style={styles.video}>
-        {isArmed ? 
-          <WebView source={{ uri: 'http://raspberrypi.local:8000/stream.mjpg' }} /> : 
-          <View style={{alignSelf: 'center', flex: 1, justifyContent: 'space-around'}}><Text style={styles.body}>The camera is turned off</Text></View>}
+        {isArmed ?
+          <WebView style={{ height: '100%' }} allowsFullscreenVideo={true} source={{ uri: 'http://raspberrypi.local:8000/stream.mjpg' }} /> :
+          <View style={{ alignSelf: 'center', flex: 1, justifyContent: 'space-around' }}><Text style={styles.body}>The camera is turned off</Text></View>}
       </View>
-      {isLoading ? <ActivityIndicator size={"large"} /> :
-        <View>
-          {isArmed ? <Text style={styles.body}>Armed</Text> : <Text style={styles.body}>Disarmed</Text>}
-          <Switch style={styles.switch} trackColor={{ true: 'green', false: 'red' }} thumbColor={isArmed ? 'red' : '#005249'} ios_backgroundColor='grey'
-           onValueChange={switchCallback} value={isArmed} />
-        </View>}
-      <View style={{ flexDirection: 'row', flex: 0.75}}>
+      <View style={{flex:0.5, justifyContent: 'space-around'}}>
+        {isLoading ? <ActivityIndicator style={{alignSelf: 'center'}} size={"large"} /> :
+          <View>
+            {isArmed ? <Text style={styles.body}>Armed</Text> : <Text style={styles.body}>Disarmed</Text>}
+            <Switch style={styles.switch} trackColor={{ true: 'grey', false: 'grey' }} thumbColor={isArmed ? 'red' : '#005249'} ios_backgroundColor='grey'
+              onValueChange={switchCallback} value={isArmed} />
+          </View>}
+      </View>
+      <View style={{ flexDirection: 'row', flex: 0.75, justifyContent: 'space-around', marginTop: '5%' }}>
         <TouchableOpacity style={styles.call_button} onPress={onCallPress}>
           <Text style={styles.call_text}>Call {emergencyContactName}</Text>
         </TouchableOpacity>
@@ -228,17 +232,17 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     justifyContent: 'space-around',
-    margine: '5%'
+    marginLeft: '5%'
   },
   call_button: {
     borderRadius: '100%',
-    backgroundColor: '#FF5F15',
+    backgroundColor: '#D8863B',
     alignSelf: 'center',
-    borderColor: '#FF5F15',
+    borderColor: '#D8863B',
     flex: 1,
     height: '100%',
     justifyContent: 'space-around',
-    margin: '5%'
+    marginRight: '5%'
   },
   call_text: {
     alignSelf: 'center',
