@@ -58,6 +58,7 @@ function AuthenticatedApp() {
 
 function App() {
   const [isArmed, setArmed] = useState(false);
+  const [isDeviceConnected, setDeviceConnected] = useState(false);
   const { user, signOut } = useAuthenticator((context) => [context.user]);
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState(false);
@@ -79,12 +80,22 @@ function App() {
       console.log(response);
     });
 
+    const interval = setInterval(() => {
+      fetch('http://raspberrypi.local:8000/ping', { method: "GET" }).then(() => {
+        setDeviceConnected(true);
+      }).catch(() => {
+        setDeviceConnected(false)
+      })
+    }, 1000)
+
     return () => {
       Notifications.removeNotificationSubscription(notificationListener.current);
       Notifications.removeNotificationSubscription(responseListener.current);
+      clearInterval(interval)
     };
   }, []);
 
+  
 
   const switchCallback = () => {
     setLoading(true)
@@ -141,19 +152,27 @@ function App() {
         </View>
       </View>
       <Text style={styles.body}>Live feed</Text>
-      <View style={styles.video}>
-        {isArmed ?
-          <WebView style={{ height: '100%' }} allowsFullscreenVideo={true} source={{ uri: 'http://raspberrypi.local:8000/stream.mjpg' }} /> :
-          <View style={{ alignSelf: 'center', flex: 1, justifyContent: 'space-around' }}><Text style={styles.body}>The camera is turned off</Text></View>}
+      {isDeviceConnected ? 
+      <View style={{flex: 4.5}}>
+        <View style={styles.video}>
+          {isArmed ?
+            <WebView style={{ height: '100%' }} allowsFullscreenVideo={true} source={{ uri: 'http://raspberrypi.local:8000/stream.mjpg' }} /> :
+            <View style={{ alignSelf: 'center', flex: 1, justifyContent: 'space-around' }}><Text style={styles.body}>The camera is turned off</Text></View>}
+        </View>
+        <View style={{flex:0.5, justifyContent: 'space-around'}}>
+          {isLoading ? <ActivityIndicator style={{alignSelf: 'center'}} size={"large"} /> :
+            <View>
+              {isArmed ? <Text style={styles.body}>Armed</Text> : <Text style={styles.body}>Disarmed</Text>}
+              <Switch style={styles.switch} trackColor={{ true: 'grey', false: 'grey' }} thumbColor={isArmed ? 'red' : '#005249'} ios_backgroundColor='grey'
+                onValueChange={switchCallback} value={isArmed} />
+            </View>}
+        </View>
       </View>
-      <View style={{flex:0.5, justifyContent: 'space-around'}}>
-        {isLoading ? <ActivityIndicator style={{alignSelf: 'center'}} size={"large"} /> :
-          <View>
-            {isArmed ? <Text style={styles.body}>Armed</Text> : <Text style={styles.body}>Disarmed</Text>}
-            <Switch style={styles.switch} trackColor={{ true: 'grey', false: 'grey' }} thumbColor={isArmed ? 'red' : '#005249'} ios_backgroundColor='grey'
-              onValueChange={switchCallback} value={isArmed} />
-          </View>}
+      : 
+      <View style={{flex: 4.5, justifyContent: 'space-around'}}>
+        <Text style={styles.body}>Device is not responding.{"\n\n"}If device is on and connected to your personal hotspot, please give up to a minute for it to start up.</Text>
       </View>
+      }
       <View style={{ flexDirection: 'row', flex: 0.75, justifyContent: 'space-around', marginTop: '5%' }}>
         <TouchableOpacity style={styles.call_button} onPress={onCallPress}>
           <Text style={styles.call_text}>Call {emergencyContactName}</Text>
