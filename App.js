@@ -57,7 +57,7 @@ function AuthenticatedApp() {
 }
 
 function App() {
-  const [batteryLevel, setBatteryLevel] = useState("Unknown")
+  // const [batteryLevel, setBatteryLevel] = useState("Unknown") 
   const [isArmed, setArmed] = useState(false);
   const [isDeviceConnected, setDeviceConnected] = useState(false);
   const { user, signOut } = useAuthenticator((context) => [context.user]);
@@ -84,7 +84,7 @@ function App() {
     const interval = setInterval(() => {
       fetch('http://raspberrypi.local:8000/ping', { method: "GET" }).then((res) => {
         setDeviceConnected(true);
-        setBatteryLevel(res.headers.get('battery-level'))
+        // setBatteryLevel(res.headers.get('battery-level'))
       }).catch(() => {
         setDeviceConnected(false)
       })
@@ -156,7 +156,7 @@ function App() {
       <Text style={styles.body}>Live feed</Text>
       {isDeviceConnected ? 
       <View style={{flex: 4.5}}>
-        <Text style={styles.body}>SID Battery level: {batteryLevel}</Text>
+        {/* <Text style={styles.body}>SID Battery level: {batteryLevel}</Text> */}
         <View style={styles.video}>
           {isArmed ?
             <WebView style={{ height: '100%' }} allowsFullscreenVideo={true} source={{ uri: 'http://raspberrypi.local:8000/stream.mjpg' }} /> :
