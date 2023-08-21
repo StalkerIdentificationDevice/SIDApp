@@ -8,7 +8,6 @@ import awsconfig from './src/aws-exports';
 import { Authenticator, useAuthenticator } from '@aws-amplify/ui-react-native';
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -57,6 +56,17 @@ function AuthenticatedApp() {
 }
 
 function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Root" component={HomePage} options={{ headerShown: false }} />
+        <Stack.Screen name="Notifications" component={Notifications} options={{ headerShown: false }} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+function HomePage(navigation) {
   // const [batteryLevel, setBatteryLevel] = useState("Unknown") 
   const [isArmed, setArmed] = useState(false);
   const [isDeviceConnected, setDeviceConnected] = useState(false);
@@ -97,7 +107,7 @@ function App() {
     };
   }, []);
 
-  
+
 
   const switchCallback = () => {
     setLoading(true)
@@ -143,6 +153,9 @@ function App() {
     <View style={styles.container}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <View style={{ flex: 1 }}>
+          <TouchableOpacity style={styles.regular_button} onPress={() => navigation.navigate('Notifications', {notif: notification})}>
+            <Text style={{ textAlign: 'center' }}>Notifications</Text>
+          </TouchableOpacity>
         </View>
         <View style={{ flex: 3, justifyContent: 'space-around' }}>
           <Text style={styles.title}>S.I.D</Text>
@@ -154,27 +167,27 @@ function App() {
         </View>
       </View>
       <Text style={styles.body}>Live feed</Text>
-      {isDeviceConnected ? 
-      <View style={{flex: 4.5}}>
-        {/* <Text style={styles.body}>SID Battery level: {batteryLevel}</Text> */}
-        <View style={styles.video}>
-          {isArmed ?
-            <WebView style={{ height: '100%' }} allowsFullscreenVideo={true} source={{ uri: 'http://raspberrypi.local:8000/stream.mjpg' }} /> :
-            <View style={{ alignSelf: 'center', flex: 1, justifyContent: 'space-around' }}><Text style={styles.body}>The camera is turned off</Text></View>}
+      {isDeviceConnected ?
+        <View style={{ flex: 4.5 }}>
+          {/* <Text style={styles.body}>SID Battery level: {batteryLevel}</Text> */}
+          <View style={styles.video}>
+            {isArmed ?
+              <WebView style={{ height: '100%' }} allowsFullscreenVideo={true} source={{ uri: 'http://raspberrypi.local:8000/stream.mjpg' }} /> :
+              <View style={{ alignSelf: 'center', flex: 1, justifyContent: 'space-around' }}><Text style={styles.body}>The camera is turned off</Text></View>}
+          </View>
+          <View style={{ flex: 0.5, justifyContent: 'space-around' }}>
+            {isLoading ? <ActivityIndicator style={{ alignSelf: 'center' }} size={"large"} /> :
+              <View>
+                {isArmed ? <Text style={styles.body}>Armed</Text> : <Text style={styles.body}>Disarmed</Text>}
+                <Switch style={styles.switch} trackColor={{ true: 'grey', false: 'grey' }} thumbColor={isArmed ? 'red' : '#005249'} ios_backgroundColor='grey'
+                  onValueChange={switchCallback} value={isArmed} />
+              </View>}
+          </View>
         </View>
-        <View style={{flex:0.5, justifyContent: 'space-around'}}>
-          {isLoading ? <ActivityIndicator style={{alignSelf: 'center'}} size={"large"} /> :
-            <View>
-              {isArmed ? <Text style={styles.body}>Armed</Text> : <Text style={styles.body}>Disarmed</Text>}
-              <Switch style={styles.switch} trackColor={{ true: 'grey', false: 'grey' }} thumbColor={isArmed ? 'red' : '#005249'} ios_backgroundColor='grey'
-                onValueChange={switchCallback} value={isArmed} />
-            </View>}
+        :
+        <View style={{ flex: 4.5, justifyContent: 'space-around' }}>
+          <Text style={styles.body}>Device is not responding.{"\n\n"}If device is on and connected to your personal hotspot, please give up to a minute for it to start up.</Text>
         </View>
-      </View>
-      : 
-      <View style={{flex: 4.5, justifyContent: 'space-around'}}>
-        <Text style={styles.body}>Device is not responding.{"\n\n"}If device is on and connected to your personal hotspot, please give up to a minute for it to start up.</Text>
-      </View>
       }
       <View style={{ flexDirection: 'row', flex: 0.75, justifyContent: 'space-around', marginTop: '5%' }}>
         <TouchableOpacity style={styles.call_button} onPress={onCallPress}>
@@ -220,6 +233,25 @@ async function registerForPushNotificationsAsync() {
   return token;
 }
 
+function Notifications(navigation, route) {
+  return(
+    <View style={styles.container}>
+      <Button title="<= Go home" onPress={() => {
+        navigation.goBack()
+      }} />
+      {route.params.notif ? 
+      <View style={{flex: 1, justifyContent: 'space-evenly'}}>
+        <View style={styles.notification}>
+          <Text style={styles.boldbody}>{route.params.notif.request.content.body}</Text>
+          <Text style={styles.body}>Description: {route.params.notif.request.content.data.description}</Text>
+          <Text style={styles.body}>Number of total sightings: {route.params.notif.request.content.data.num_sightings}</Text>
+        </View>
+      </View>
+: <Text style={styles.boldbody}>You currently have no notification</Text>}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -236,6 +268,12 @@ const styles = StyleSheet.create({
   body: {
     alignSelf: 'center',
     textAlign: 'center',
+    color: 'white'
+  },
+  boldbody: {
+    textAlign: 'center',
+    fontSize: 19,
+    fontWeight: 'bold',
     color: 'white'
   },
   video: {
@@ -278,5 +316,15 @@ const styles = StyleSheet.create({
     borderColor: '#ADD8E6',
     justifyContent: 'space-around',
     borderWidth: '10%'
+  },
+  notification: {
+    alignSelf: 'center',
+    width: '90%',
+    borderColor: 'grey',
+    borderWidth: 2,
+    borderRadius: 15,
+    marginTop: 10,
+    marginBottom: 6,
+    padding: 10
   },
 });
